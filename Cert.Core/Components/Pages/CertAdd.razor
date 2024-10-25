@@ -1,0 +1,20 @@
+@page "/certadd"
+@rendermode InteractiveServer
+
+<PageTitle>Generate certificate</PageTitle>
+
+<h1>Generate Certificate</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+private int currentCount = 10;
+
+private void IncrementCount()
+{
+currentCount++;
+}
+
+}
