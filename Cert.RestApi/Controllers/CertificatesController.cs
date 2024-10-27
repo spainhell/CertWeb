@@ -1,5 +1,6 @@
 using Cert.Common.Models;
 using Cert.Common.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,10 +25,9 @@ public class CertificateController : Controller
     /// Returns all certificates list
     /// </summary>
     /// <returns>A response with certificates list</returns>
-    [HttpGet("")]
+    [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Certificate>))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllCertificates()
     {
         _logger?.LogDebug($"Method '{nameof(GetAllCertificates)}' called.");
@@ -52,7 +52,7 @@ public class CertificateController : Controller
     [HttpGet("{id:int}")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Certificate))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCertificate(int id)
     {
         _logger?.LogDebug($"Method '{nameof(GetCertificate)}' called.");
@@ -60,6 +60,10 @@ public class CertificateController : Controller
         {
             var certificate = await _certificateService.GetCertificate(id);
             _logger?.LogInformation($"Method '{nameof(GetCertificate)}' successfully done.");
+            if (certificate == null)
+            {
+                return NotFound();
+            }
             return Ok(certificate);
         }
         catch (Exception ex)
@@ -74,7 +78,7 @@ public class CertificateController : Controller
     /// Generates a new certificate
     /// </summary>
     /// <returns>A response with the certificate</returns>
-    [HttpPost("")]
+    [HttpPost]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(IEnumerable<Certificate>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -85,6 +89,10 @@ public class CertificateController : Controller
         {
             var certificate = await _certificateService.GenerateCertificate(request);
             _logger?.LogInformation($"Method '{nameof(GenerateCertificate)}' successfully done.");
+            if (certificate == null)
+            {
+                return BadRequest();
+            }
             return Ok(certificate);
         }
         catch (Exception ex)
@@ -94,15 +102,14 @@ public class CertificateController : Controller
         }
     }
     
-    // POST: api/certificate
+    // DELETE: api/certificate/1
     /// <summary>
-    /// Generates a new certificate
+    /// Deletes a certificate
     /// </summary>
-    /// <returns>A response with the certificate</returns>
+    /// <returns>Only a response code</returns>
     [HttpDelete("{id:int}")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteCertificate(int id)
     {
         _logger?.LogDebug($"Method '{nameof(DeleteCertificate)}' called.");

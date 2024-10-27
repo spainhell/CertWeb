@@ -2,13 +2,14 @@
 @using Cert.Common.Models
 @using Cert.Common.Services
 @inject ICertificateService CertificateService
+@inject HttpClient Http
 @rendermode InteractiveServer
 
 <PageTitle>Certificates</PageTitle>
 
 <h1>Certificates</h1>
 
-<p role="status">Total count: @_dataFromService.Count()</p>
+<p role="status">Total count: @_dataFromService?.Count()</p>
 
 <table class="table">
     <thead>
@@ -22,25 +23,35 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var cert in _dataFromService)
+    @if (_dataFromService == null)
     {
         <tr>
-            <td>@cert.Id</td>
-            <td>@cert.LastName @cert.FirstName</td>
-            <td>@cert.Issuer</td>
-            <td>@cert.IssueDate.ToString("dd.MM.yyyy")</td>
-            <td>@cert.ExpireDate.ToString("dd.MM.yyyy")</td>
-            <td>
-                <button class="btn btn-primary" @onclick="() => ShowCertificateDetails(cert.Id)">Detail</button>
-                <button class="btn btn-danger" @onclick="() => DeleteCertificate(cert.Id)">Delete</button>
-            </td>
+            <td>Loading...</td>
         </tr>
     }
+    else
+    {
+        @foreach (var cert in _dataFromService!)
+        {
+            <tr>
+                <td>@cert.Id</td>
+                <td>@cert.LastName @cert.FirstName</td>
+                <td>@cert.Issuer</td>
+                <td>@cert.IssueDate.ToString("dd.MM.yyyy")</td>
+                <td>@cert.ExpireDate.ToString("dd.MM.yyyy")</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => ShowCertificateDetails(cert.Id)">Detail</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteCertificate(cert.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    }
     </tbody>
-</table>
+</table >
 
 
 @code {
+
     private IEnumerable<Certificate>? _dataFromService;
 
     protected override async Task OnInitializedAsync()
@@ -54,8 +65,13 @@
         //currentCount++;
     }
 
-    private void DeleteCertificate(int Id)
+    private async void DeleteCertificate(int id)
     {
-        //currentCount++;
+        Http.BaseAddress = new Uri("http://localhost:5065");
+        await Http.DeleteAsync($"/api/certificate/{id}");
+
+        // reload page data
+        _dataFromService = await CertificateService.GetAllCertificates();
     }
+
 }
