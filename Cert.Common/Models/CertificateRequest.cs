@@ -6,7 +6,7 @@ public class CertificateRequest
 {
     [Key] [Required] public int Id { get; set; } = 0;
     
-    [Required] public CertificateType? Type { get; set; } = null;
+    [Required] public CertificateType? CertificateType { get; set; } = Models.CertificateType.Commercial;
 
     [Required] public string FirstName { get; set; } = "";
     
