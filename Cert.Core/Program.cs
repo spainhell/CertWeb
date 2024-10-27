@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddHttpClient();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddControllers();
+builder.Services.AddSwaggerGen();       // add Swagger
+builder.Services.AddControllers();      // add controllers
 
 builder.Services.AddSingleton<ICertificateService, CertificateRepository>();
 
@@ -21,6 +22,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// add Swagger
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Certificates API V1");
+    options.RoutePrefix = "swagger"; // Access Swagger at /swagger
+});
+
+// add routing for controllers
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
 //app.UseHttpsRedirection();

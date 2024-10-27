@@ -99,7 +99,7 @@ public class CertificateController : Controller
     /// Generates a new certificate
     /// </summary>
     /// <returns>A response with the certificate</returns>
-    [HttpPost("{id:int}")]
+    [HttpDelete("{id:int}")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
