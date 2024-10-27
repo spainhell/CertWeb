@@ -1,20 +1,61 @@
 @page "/certlist"
+@using Cert.Common.Models
+@using Cert.Common.Services
+@inject ICertificateService CertificateService
 @rendermode InteractiveServer
 
 <PageTitle>Certificates</PageTitle>
 
 <h1>Certificates</h1>
 
-<p role="status">Current count: @currentCount</p>
+<p role="status">Total count: @dataFromService.Count()</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Issuer</th>
+        <th>Issue Date</th>
+        <th>Expiry Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var cert in dataFromService)
+    {
+        <tr>
+            <td>@cert.Id</td>
+            <td>@cert.LastName @cert.FirstName</td>
+            <td>@cert.Issuer</td>
+            <td>@cert.IssueDate.ToString("dd.MM.yyyy")</td>
+            <td>@cert.ExpireDate.ToString("dd.MM.yyyy")</td>
+            <td>
+                <button class="btn btn-primary" @onclick="() => ShowCertificateDetails(cert.Id)">Detail</button>
+                <button class="btn btn-danger" @onclick="() => DeleteCertificate(cert.Id)">Delete</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
 
 @code {
-private int currentCount = 0;
+    private IEnumerable<Certificate> dataFromService;
 
-private void IncrementCount()
-{
-currentCount++;
-}
+    protected override async Task OnInitializedAsync()
+    {
+        // Use the injected service
+        dataFromService = await CertificateService.GetAllCertificates();
+    }
 
+    private void ShowCertificateDetails(int Id)
+    {
+        //currentCount++;
+    }
+
+    private void DeleteCertificate(int Id)
+    {
+        //currentCount++;
+    }
 }

@@ -33,17 +33,7 @@ public class CertificatesController : Controller
         _logger?.LogDebug($"Method '{nameof(GetAllCertificates)}' called.");
         try
         {
-            //var certificates = await _certificateService.GetAllCertificates();
-            var certificates = new List<Certificate>
-            {
-                new Certificate
-                {
-                    Id = 1,
-                    CertData = "Certificate Data",
-                    ExpireDate = DateTime.Today,
-                    CommonName = "Common Name"
-                }
-            };
+            var certificates = await _certificateService.GetAllCertificates();
             _logger?.LogInformation($"Method '{nameof(GetAllCertificates)}' successfully done.");
             return Ok(certificates);
         }
